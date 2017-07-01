@@ -15,6 +15,7 @@ public class Commands {
 
     public static void addCommands() {
         commands.add(new CommandSClear());
+        commands.add(new CommandOutfit());
     }
 
     public static void registerCommands() {

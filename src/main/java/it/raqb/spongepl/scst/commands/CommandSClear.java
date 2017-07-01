@@ -52,12 +52,17 @@ public class CommandSClear implements ICommand {
 
                 if(itemCounter != 0){
                     src.sendMessage(Text.builder("Cleared your inventory, removing " + itemCounter + " items").build());
+                    return CommandResult.success();
+
                 } else {
                     src.sendMessage(Text.builder("Could not clear your inventory, no items to remove").color(TextColors.RED).build());
+                    return CommandResult.empty();
                 }
 
+            } else {
+                src.sendMessage(Text.builder("Only players can use this command").color(TextColors.RED).build());
+                return CommandResult.empty();
             }
-            return CommandResult.success();
         }
     }
 }

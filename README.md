@@ -1,6 +1,8 @@
 # SCST
 ### SecurityCraft Server Tweaks
 
+Tweaks for the new SecurityCraft server.
+
 #### Commands
 
 |Usage|Description| Permission|Aliases |
