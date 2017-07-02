@@ -104,8 +104,6 @@ gradle-app.setting
 
 .idea
 run
-gradlew
-gradle
 /bin/
 /.classpath
 /.project
