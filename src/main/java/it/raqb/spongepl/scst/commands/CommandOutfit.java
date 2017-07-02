@@ -52,7 +52,7 @@ public class CommandOutfit implements ICommand {
             if (src instanceof Player) {
                 Player player = (Player)src;
 
-                CommentedConfigurationNode saveNode = SCST.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId());
+                CommentedConfigurationNode saveNode = SCST.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
 
                 if(saveNode.isVirtual()){
                     player.sendMessage(
@@ -63,8 +63,7 @@ public class CommandOutfit implements ICommand {
                 }
 
                 Slot[] slotArr = Iterables
-                        .toArray(((Player) src)
-                                .getInventory().slots(), Slot.class);
+                        .toArray(player.getInventory().slots(), Slot.class);
 
                 HashMap<String, Integer> slotIDs = new HashMap<String, Integer>();
 
@@ -86,7 +85,7 @@ public class CommandOutfit implements ICommand {
                     }
                 }
 
-                player.sendMessage(Text.of("Restored your saved outfit."));
+                player.sendMessage(Text.of("Restored your saved outfit"));
                 return CommandResult.success();
 
             } else {
@@ -104,11 +103,10 @@ public class CommandOutfit implements ICommand {
             if (src instanceof Player) {
                 Player player = (Player)src;
 
-                CommentedConfigurationNode saveNode = SCST.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId());
+                CommentedConfigurationNode saveNode = SCST.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
 
                 Slot[] slotArr = Iterables
-                        .toArray(((Player) src)
-                                .getInventory().slots(), Slot.class);
+                        .toArray(player.getInventory().slots(), Slot.class);
 
                 HashMap<String, Integer> slotIDs = new HashMap<String, Integer>();
 
@@ -139,7 +137,7 @@ public class CommandOutfit implements ICommand {
                 }
                 SCST.configHelper.saveConfig();
 
-                player.sendMessage(Text.of("Saved your current outfit."));
+                player.sendMessage(Text.of("Saved your current outfit"));
 
                 return CommandResult.success();
             } else {

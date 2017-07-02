@@ -15,7 +15,12 @@ public class ConfigHelper {
 
     public ConfigHelper(ConfigurationLoader<CommentedConfigurationNode> _configManager){
         this.configManager = _configManager;
-        this.rootNode = _configManager.createEmptyNode();
+        try {
+            this.rootNode = _configManager.load();
+        } catch (IOException e) {
+            SCST.INSTANCE.logger.error("Could not load config file, see stacktrace:");
+            e.printStackTrace();
+        }
     }
 
     public void saveConfig(){
