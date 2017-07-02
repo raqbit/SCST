@@ -19,7 +19,7 @@ import org.spongepowered.api.plugin.Plugin;
         authors = {
                 "Raqbit"
         },
-        version = "1.1.0"
+        version = "1.1.1"
 )
 public class SCST {
 
