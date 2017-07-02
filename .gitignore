@@ -106,3 +106,8 @@ gradle-app.setting
 run
 gradlew
 gradle
+/bin/
+/.classpath
+/.project
+/.settings
+/target/
