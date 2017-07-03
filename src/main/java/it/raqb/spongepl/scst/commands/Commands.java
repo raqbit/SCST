@@ -16,6 +16,8 @@ public class Commands {
     public static void addCommands() {
         commands.add(new CommandSClear());
         commands.add(new CommandOutfit());
+        commands.add(new CommandAddToGroup());
+        commands.add(new CommandRemoveFromGroup());
     }
 
     public static void registerCommands() {

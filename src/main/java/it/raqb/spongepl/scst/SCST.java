@@ -14,12 +14,12 @@ import org.spongepowered.api.plugin.Plugin;
 @Plugin(
         id = "scst",
         name = "SCST",
-        description = "Tweaks for the Security Craft Server",
+        description = "Tweaks for the SecurityCraft Server",
         url = "http://raqb.it",
         authors = {
-                "Raqbit"
+                "Raqbit", "Vauff"
         },
-        version = "1.1.1"
+        version = "1.2"
 )
 public class SCST {
 
