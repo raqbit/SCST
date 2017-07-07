@@ -21,9 +21,16 @@ import org.spongepowered.api.text.format.TextColors;
 import java.util.HashMap;
 
 /**
- * Created by Raqbit on 1-7-17.
+ * Created by Raqbit on 7-1-17.
  */
-public class CommandOutfit implements ICommand {
+public class CommandOutfit extends Command {
+
+    private SCST pluginInstance;
+
+    public CommandOutfit(SCST plugin) {
+        super(plugin);
+        pluginInstance = plugin;
+    }
 
     @Override
     public CommandSpec getCommand() {
@@ -52,7 +59,7 @@ public class CommandOutfit implements ICommand {
             if (src instanceof Player) {
                 Player player = (Player)src;
 
-                CommentedConfigurationNode saveNode = SCST.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
+                CommentedConfigurationNode saveNode = pluginInstance.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
 
                 if(saveNode.isVirtual()){
                     player.sendMessage(
@@ -80,7 +87,7 @@ public class CommandOutfit implements ICommand {
                         ItemStack stack = node.getValue(TypeToken.of(ItemStack.class));
                         slot.set(stack);
                     } catch (ObjectMappingException e) {
-                        SCST.INSTANCE.logger.error("Could not map ItemStack");
+                        pluginInstance.logger.error("Could not map ItemStack");
                         e.printStackTrace();
                     }
                 }
@@ -103,7 +110,7 @@ public class CommandOutfit implements ICommand {
             if (src instanceof Player) {
                 Player player = (Player)src;
 
-                CommentedConfigurationNode saveNode = SCST.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
+                CommentedConfigurationNode saveNode = pluginInstance.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
 
                 Slot[] slotArr = Iterables
                         .toArray(player.getInventory().slots(), Slot.class);
@@ -123,19 +130,19 @@ public class CommandOutfit implements ICommand {
                         try {
                             node.setValue(TypeToken.of(ItemStack.class),slot.peek().get());
                         } catch (ObjectMappingException e) {
-                            SCST.INSTANCE.logger.error("Could not map ItemStack");
+                            pluginInstance.logger.error("Could not map ItemStack");
                             e.printStackTrace();
                         }
                     } else {
                         try {
                             node.setValue(TypeToken.of(ItemStack.class),ItemStack.empty());
                         } catch (ObjectMappingException e) {
-                            SCST.INSTANCE.logger.error("Could not map empty ItemStack");
+                            pluginInstance.logger.error("Could not map empty ItemStack");
                             e.printStackTrace();
                         }
                     }
                 }
-                SCST.configHelper.saveConfig();
+                pluginInstance.configHelper.saveConfig();
 
                 player.sendMessage(Text.of("Saved your current outfit"));
 

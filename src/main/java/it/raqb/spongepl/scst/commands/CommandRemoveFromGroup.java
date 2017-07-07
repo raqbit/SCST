@@ -1,5 +1,6 @@
 package it.raqb.spongepl.scst.commands;
 
+import it.raqb.spongepl.scst.SCST;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -14,8 +15,11 @@ import org.spongepowered.api.text.format.TextColors;
 
 // Created by Vauff on 07-02-2017
 
-public class CommandRemoveFromGroup implements ICommand
-{
+public class CommandRemoveFromGroup extends Command {
+
+	public CommandRemoveFromGroup(SCST plugin) {
+		super(plugin);
+	}
 
 	@Override
 	public CommandSpec getCommand()

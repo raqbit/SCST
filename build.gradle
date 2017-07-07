@@ -1,13 +1,27 @@
 plugins {
     id 'org.spongepowered.plugin' version '0.8.1'
+    id "ninja.miserable.blossom" version "1.0.1"
 }
 
 group = pluginGroup
 version = pluginVersion
 
+repositories {
+    maven {
+        name "luck-repo"
+        url "https://repo.lucko.me/"
+    }
+}
+
 dependencies {
     compile 'org.spongepowered:spongeapi:6.1.0-SNAPSHOT'
+    compile ("me.lucko.luckperms:luckperms-api:3.2")
 }
 libsDirName = '../run/mods'
 
 sponge.plugin.id = pluginId
+
+blossom {
+    def constants = 'src/main/java/it/raqb/spongepl/scst/SCST.java'
+    replaceToken '${VERSION}', pluginVersion, constants
+}

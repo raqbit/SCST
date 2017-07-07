@@ -10,15 +10,20 @@ import java.io.IOException;
  */
 public class ConfigHelper {
 
+    private SCST pluginInstance;
+
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
     public CommentedConfigurationNode rootNode;
 
-    public ConfigHelper(ConfigurationLoader<CommentedConfigurationNode> _configManager){
+    public ConfigHelper(SCST plugin, ConfigurationLoader<CommentedConfigurationNode> _configManager){
+
+        pluginInstance = plugin;
+
         this.configManager = _configManager;
         try {
             this.rootNode = _configManager.load();
         } catch (IOException e) {
-            SCST.INSTANCE.logger.error("Could not load config file, see stacktrace:");
+            pluginInstance.logger.error("Could not load config file, see stacktrace:");
             e.printStackTrace();
         }
     }
@@ -27,7 +32,7 @@ public class ConfigHelper {
         try {
             this.configManager.save(rootNode);
         } catch (IOException err) {
-            SCST.INSTANCE.logger.error("Could not save config file, see stacktrace:");
+            pluginInstance.logger.error("Could not save config file, see stacktrace:");
             err.printStackTrace();
         }
     }

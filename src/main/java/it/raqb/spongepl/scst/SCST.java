@@ -1,15 +1,21 @@
 package it.raqb.spongepl.scst;
 
 import com.google.inject.Inject;
-import it.raqb.spongepl.scst.commands.Commands;
+import it.raqb.spongepl.scst.commands.CommandManager;
+import it.raqb.spongepl.scst.listeners.TutorialListeners;
+import me.lucko.luckperms.LuckPerms;
+import me.lucko.luckperms.api.LuckPermsApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.slf4j.Logger;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
+
+import java.util.Optional;
 
 @Plugin(
         id = "scst",
@@ -19,30 +25,52 @@ import org.spongepowered.api.plugin.Plugin;
         authors = {
                 "Raqbit", "Vauff"
         },
-        version = "1.2"
+        version = "${VERSION}",
+        dependencies = {
+                @Dependency(id= "luckperms")
+        }
 )
 public class SCST {
-
-    @Inject
-    public Logger logger;
 
     @Inject
     @DefaultConfig(sharedRoot = true)
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
-    public static ConfigHelper configHelper;
+    @Inject
+    public Logger logger;
 
-    public static SCST INSTANCE;
+    public ConfigHelper configHelper;
+
+    public LuckPermsApi luckPerms;
+
+    private CommandManager commandManager;
 
     @Listener
     public void onServerStart(GameStartedServerEvent event) {
-        INSTANCE = this;
-        this.configHelper = new ConfigHelper(configManager);
-        Commands.registerCommands();
+        // Setup basic listeners
+        registerEventListeners();
+
+        // Creating ConfigHelper
+        configHelper = new ConfigHelper(this, configManager);
+
+        // Creating Command Manager
+        commandManager = new CommandManager(this);
+
+        // Registering commands
+        commandManager.registerCommands();
+
+        // Setup LuckPerms API
+        setupLuckPermsAPI();
     }
 
-    @Listener
-    public void onServerClose(GameStoppedServerEvent event){
-        INSTANCE = null;
+    private void registerEventListeners() {
+        Sponge.getEventManager().registerListeners(this, new TutorialListeners(this));
+    }
+
+    private void setupLuckPermsAPI(){
+        Optional<LuckPermsApi> provider = LuckPerms.getApiSafe();
+        if(provider.isPresent()){
+            this.luckPerms = provider.get();
+        }
     }
 }

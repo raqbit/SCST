@@ -1,6 +1,7 @@
 package it.raqb.spongepl.scst.commands;
 
 import com.google.common.collect.Iterables;
+import it.raqb.spongepl.scst.SCST;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -15,7 +16,11 @@ import org.spongepowered.api.text.format.TextColors;
 /**
  * Created by Raqbit on 29-6-17.
  */
-public class CommandSClear implements ICommand {
+public class CommandSClear extends Command {
+
+    public CommandSClear(SCST plugin) {
+        super(plugin);
+    }
 
     @Override
     public CommandSpec getCommand() {
