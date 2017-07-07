@@ -56,50 +56,50 @@ public class CommandOutfit extends Command {
 
         @Override
         public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-            if (src instanceof Player) {
-                Player player = (Player)src;
 
-                CommentedConfigurationNode saveNode = pluginInstance.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
-
-                if(saveNode.isVirtual()){
-                    player.sendMessage(
-                            Text.builder("You don't have an outfit saved, use /outfit save to save one")
-                            .color(TextColors.RED).build()
-                    );
-                    return CommandResult.empty();
-                }
-
-                Slot[] slotArr = Iterables
-                        .toArray(player.getInventory().slots(), Slot.class);
-
-                HashMap<String, Integer> slotIDs = new HashMap<String, Integer>();
-
-                slotIDs.put("head", 39);
-                slotIDs.put("chest",38);
-                slotIDs.put("legs",37);
-                slotIDs.put("feet",36);
-
-                for(String key : slotIDs.keySet()) {
-                    ConfigurationNode node = saveNode.getNode(key);
-                    Slot slot = slotArr[slotIDs.get(key)];
-
-                    try {
-                        ItemStack stack = node.getValue(TypeToken.of(ItemStack.class));
-                        slot.set(stack);
-                    } catch (ObjectMappingException e) {
-                        pluginInstance.logger.error("Could not map ItemStack");
-                        e.printStackTrace();
-                    }
-                }
-
-                player.sendMessage(Text.of("Restored your saved outfit"));
-                return CommandResult.success();
-
-            } else {
+            if (!(src instanceof Player)) {
                 src.sendMessage(Text.builder("Only players can use this command").color(TextColors.RED).build());
                 return CommandResult.empty();
-
             }
+
+            Player player = (Player)src;
+
+            CommentedConfigurationNode saveNode = pluginInstance.getConfigHelper().rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
+
+            if(saveNode.isVirtual()){
+                player.sendMessage(
+                        Text.builder("You don't have an outfit saved, use /outfit save to save one")
+                        .color(TextColors.RED).build()
+                );
+                return CommandResult.empty();
+            }
+
+            Slot[] slotArr = Iterables
+                    .toArray(player.getInventory().slots(), Slot.class);
+
+            HashMap<String, Integer> slotIDs = new HashMap<String, Integer>();
+
+            slotIDs.put("head", 39);
+            slotIDs.put("chest",38);
+            slotIDs.put("legs",37);
+            slotIDs.put("feet",36);
+
+            for(String key : slotIDs.keySet()) {
+                ConfigurationNode node = saveNode.getNode(key);
+                Slot slot = slotArr[slotIDs.get(key)];
+
+                try {
+                    ItemStack stack = node.getValue(TypeToken.of(ItemStack.class));
+                    slot.set(stack);
+                } catch (ObjectMappingException e) {
+                    pluginInstance.getLogger().error("Could not map ItemStack");
+                    e.printStackTrace();
+                }
+            }
+
+            player.sendMessage(Text.of("Restored your saved outfit"));
+            return CommandResult.success();
+
         }
     }
 
@@ -110,7 +110,7 @@ public class CommandOutfit extends Command {
             if (src instanceof Player) {
                 Player player = (Player)src;
 
-                CommentedConfigurationNode saveNode = pluginInstance.configHelper.rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
+                CommentedConfigurationNode saveNode = pluginInstance.getConfigHelper().rootNode.getNode("outfit", "savedOutfits", player.getUniqueId().toString());
 
                 Slot[] slotArr = Iterables
                         .toArray(player.getInventory().slots(), Slot.class);
@@ -130,19 +130,19 @@ public class CommandOutfit extends Command {
                         try {
                             node.setValue(TypeToken.of(ItemStack.class),slot.peek().get());
                         } catch (ObjectMappingException e) {
-                            pluginInstance.logger.error("Could not map ItemStack");
+                            pluginInstance.getLogger().error("Could not map ItemStack");
                             e.printStackTrace();
                         }
                     } else {
                         try {
                             node.setValue(TypeToken.of(ItemStack.class),ItemStack.empty());
                         } catch (ObjectMappingException e) {
-                            pluginInstance.logger.error("Could not map empty ItemStack");
+                            pluginInstance.getLogger().error("Could not map empty ItemStack");
                             e.printStackTrace();
                         }
                     }
                 }
-                pluginInstance.configHelper.saveConfig();
+                pluginInstance.getConfigHelper().saveConfig();
 
                 player.sendMessage(Text.of("Saved your current outfit"));
 

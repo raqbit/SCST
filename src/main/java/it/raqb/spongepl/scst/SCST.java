@@ -1,22 +1,32 @@
 package it.raqb.spongepl.scst;
 
+import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import it.raqb.spongepl.scst.commands.CommandManager;
+import it.raqb.spongepl.scst.config.ConfigHelper;
+import it.raqb.spongepl.scst.config.LocationSerializer;
 import it.raqb.spongepl.scst.listeners.TutorialListeners;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LuckPermsApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
+import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.slf4j.Logger;
+import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
+import org.spongepowered.api.plugin.PluginContainer;
+import org.spongepowered.api.world.Location;
 
 import java.util.Optional;
 
+/**
+ * Created by Raqbit on 6-29-17.
+ */
 @Plugin(
         id = "scst",
         name = "SCST",
@@ -33,25 +43,32 @@ import java.util.Optional;
 public class SCST {
 
     @Inject
+    private Game game;
+
+    @Inject
+    private PluginContainer pluginContainer;
+
+    @Inject
     @DefaultConfig(sharedRoot = true)
     private ConfigurationLoader<CommentedConfigurationNode> configManager;
 
     @Inject
-    public Logger logger;
+    private Logger logger;
 
-    public ConfigHelper configHelper;
-
-    public LuckPermsApi luckPerms;
+    private ConfigHelper configHelper;
 
     private CommandManager commandManager;
 
+    private LuckPermsApi luckPerms;
+
     @Listener
     public void onServerStart(GameStartedServerEvent event) {
-        // Setup basic listeners
-        registerEventListeners();
 
         // Creating ConfigHelper
         configHelper = new ConfigHelper(this, configManager);
+
+        // Setup basic listeners
+        registerEventListeners();
 
         // Creating Command Manager
         commandManager = new CommandManager(this);
@@ -59,18 +76,40 @@ public class SCST {
         // Registering commands
         commandManager.registerCommands();
 
-        // Setup LuckPerms API
-        setupLuckPermsAPI();
+        // Setup plugin apis
+        setupPluginAPIs();
     }
 
     private void registerEventListeners() {
+        // Register events
         Sponge.getEventManager().registerListeners(this, new TutorialListeners(this));
     }
 
-    private void setupLuckPermsAPI(){
+    private void setupPluginAPIs(){
+        // Setup LuckPerms API
         Optional<LuckPermsApi> provider = LuckPerms.getApiSafe();
         if(provider.isPresent()){
-            this.luckPerms = provider.get();
+            luckPerms = provider.get();
         }
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public ConfigHelper getConfigHelper() {
+        return configHelper;
+    }
+
+    public LuckPermsApi getLuckPerms() {
+        return luckPerms;
+    }
+
+    public PluginContainer getPluginContainer() {
+        return pluginContainer;
+    }
+
+    public Game getGame() {
+        return game;
     }
 }

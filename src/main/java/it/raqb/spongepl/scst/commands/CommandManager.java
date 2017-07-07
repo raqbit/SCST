@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Raqbit on 29-6-17.
+ * Created by Raqbit on 6-29-17.
  */
 public class CommandManager {
 
@@ -18,6 +18,10 @@ public class CommandManager {
     public CommandManager(SCST plugin){
         pluginInstance = plugin;
 
+        // Main command
+        commands.add(new CommandSCST(plugin));
+
+        // Other commands
         commands.add(new CommandSClear(plugin));
         commands.add(new CommandOutfit(plugin));
         commands.add(new CommandAddToGroup(plugin));

@@ -13,7 +13,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-// Created by Vauff on 07-02-2017
+// Created by Vauff on 7-2-17.
 
 public class CommandRemoveFromGroup extends Command {
 
