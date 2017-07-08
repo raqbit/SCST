@@ -1,16 +1,13 @@
 package it.raqb.spongepl.scst;
 
-import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 import it.raqb.spongepl.scst.commands.CommandManager;
 import it.raqb.spongepl.scst.config.ConfigHelper;
-import it.raqb.spongepl.scst.config.LocationSerializer;
-import it.raqb.spongepl.scst.listeners.TutorialListeners;
+import it.raqb.spongepl.scst.listeners.TutorialEndListener;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LuckPermsApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.serialize.TypeSerializers;
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
@@ -20,7 +17,6 @@ import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.world.Location;
 
 import java.util.Optional;
 
@@ -81,8 +77,10 @@ public class SCST {
     }
 
     private void registerEventListeners() {
-        // Register events
-        Sponge.getEventManager().registerListeners(this, new TutorialListeners(this));
+        // Register eventlisteners
+        TutorialEndListener tutorialEndListener = new TutorialEndListener(this);
+        tutorialEndListener.setupConfig();
+        Sponge.getEventManager().registerListeners(this, tutorialEndListener);
     }
 
     private void setupPluginAPIs(){
