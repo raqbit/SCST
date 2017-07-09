@@ -18,46 +18,65 @@ import org.spongepowered.api.world.Location;
  */
 public class TutorialStartListener {
 
-    SCST pluginInstance;
+    private SCST pluginInstance;
 
-    Location tutorialStartPos;
+    private Location tutorialStartPos;
+
+    private boolean shouldCheck;
 
     public TutorialStartListener(SCST plugin) {
         pluginInstance = plugin;
+
+        shouldCheck = true;
     }
 
     public void setupConfig() {
         ConfigurationNode startPosNode = pluginInstance.getConfigHelper().rootNode.getNode("tutorial", "start", "position");
 
+        StoredLocation placeholderLocation =
+                new StoredLocation("world",
+                new Vector3i(0,0,0));
+
         // Node doesn't exist
-        if(startPosNode.isVirtual()){
+        if(startPosNode.isVirtual()) {
+
             try {
                 startPosNode.setValue(
                         TypeToken.of(StoredLocation.class),
-                        new StoredLocation("world",
-                                new Vector3i(0,0,0)
-                        )
+                        placeholderLocation
                 );
+                shouldCheck = false;
+                pluginInstance.getLogger().info("Created placeholder values for tutorial spawnpoint");
             } catch (ObjectMappingException e) {
                 e.printStackTrace();
             }
-        } else {
-            try {
-                StoredLocation storedLocation = startPosNode.getValue(TypeToken.of(StoredLocation.class));
-                this.tutorialStartPos = new Location(pluginInstance.getGame().getServer().getWorld(storedLocation.worldName).get(), storedLocation.position);
-            } catch (ObjectMappingException e) {
-                e.printStackTrace();
+        }
+
+        try {
+            StoredLocation storedLocation = startPosNode.getValue(TypeToken.of(StoredLocation.class));
+            this.tutorialStartPos = new Location(pluginInstance.getGame().getServer().getWorld(storedLocation.worldName).get(), storedLocation.position);
+
+            if(storedLocation.equals(placeholderLocation)){
+                pluginInstance.getLogger().info("Tutorial Spawnpoint placeholder value detected");
+                shouldCheck = false;
+                return;
             }
+        } catch (ObjectMappingException e) {
+            e.printStackTrace();
         }
     }
 
     @Listener
     public void onClientJoin(ClientConnectionEvent.Join event) {
-        LuckPermsApi luckPerms = pluginInstance.getLuckPerms();
+
+        if(!shouldCheck){
+            return;
+        }
+
         Player player = event.getCause().first(Player.class).get();
 
         // Getting LuckPerms User object
-        User lpUser = luckPerms.getUser(player.getUniqueId());
+        User lpUser = pluginInstance.getLuckPerms().getUser(player.getUniqueId());
 
         if (!lpUser.getPrimaryGroup().equals("default")) {
             return;

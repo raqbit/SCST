@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import it.raqb.spongepl.scst.commands.CommandManager;
 import it.raqb.spongepl.scst.config.ConfigHelper;
 import it.raqb.spongepl.scst.listeners.TutorialEndListener;
+import it.raqb.spongepl.scst.listeners.TutorialStartListener;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.LuckPermsApi;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -63,6 +64,9 @@ public class SCST {
         // Creating ConfigHelper
         configHelper = new ConfigHelper(this, configManager);
 
+        // Setup plugin apis
+        setupPluginAPIs();
+
         // Setup basic listeners
         registerEventListeners();
 
@@ -72,15 +76,18 @@ public class SCST {
         // Registering commands
         commandManager.registerCommands();
 
-        // Setup plugin apis
-        setupPluginAPIs();
     }
 
     private void registerEventListeners() {
         // Register eventlisteners
+        TutorialStartListener tutorialStartListener = new TutorialStartListener(this);
+        tutorialStartListener.setupConfig();
+
         TutorialEndListener tutorialEndListener = new TutorialEndListener(this);
         tutorialEndListener.setupConfig();
+
         Sponge.getEventManager().registerListeners(this, tutorialEndListener);
+        Sponge.getEventManager().registerListeners(this, tutorialStartListener);
     }
 
     private void setupPluginAPIs(){

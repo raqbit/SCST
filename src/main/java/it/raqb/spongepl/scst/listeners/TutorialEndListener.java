@@ -5,6 +5,7 @@ import com.google.common.reflect.TypeToken;
 import it.raqb.spongepl.scst.SCST;
 import it.raqb.spongepl.scst.config.StoredLocation;
 import me.lucko.luckperms.api.LuckPermsApi;
+import me.lucko.luckperms.api.Node;
 import me.lucko.luckperms.api.User;
 import me.lucko.luckperms.exceptions.ObjectAlreadyHasException;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -128,11 +129,6 @@ public class TutorialEndListener {
 
         Vector3i newPlayerPosition = newLoc.getBlockPosition();
 
-        // If player isn't inside space
-        if (!isInsideConfiguredSpace(newPlayerPosition)) {
-            return;
-        }
-
         Player player = optionalPlayer.get();
 
         User lpUser = luckperms.getUser(player.getUniqueId());
@@ -142,12 +138,23 @@ public class TutorialEndListener {
             return;
         }
 
+        // If player isn't inside space
+        if (!isInsideConfiguredSpace(newPlayerPosition)) {
+            return;
+        }
+
         try {
-            lpUser.setPrimaryGroup("player");
+            Node groupNode = luckperms.getNodeFactory()
+                    .makeGroupNode(luckperms.getGroup("player"))
+                    .setValue(true).build();
+
+            lpUser.setPermission(groupNode);
+
+            luckperms.getStorage().saveUser(lpUser);
+            lpUser.refreshPermissions();
         } catch (ObjectAlreadyHasException e) {
             // Player is already in that group, shouldn't really matter.
         }
-
     }
 
     private boolean isInsideConfiguredSpace(Vector3i playerVector) {
