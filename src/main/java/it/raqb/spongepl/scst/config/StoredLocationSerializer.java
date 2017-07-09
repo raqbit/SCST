@@ -1,5 +1,6 @@
 package it.raqb.spongepl.scst.config;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.reflect.TypeToken;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -16,13 +17,13 @@ public class StoredLocationSerializer implements TypeSerializer<StoredLocation> 
 
     public StoredLocation deserialize(TypeToken<?> type, ConfigurationNode value) throws ObjectMappingException {
         String worldName = value.getNode(worldNameNodeName).getString();
-        Vector3i position = value.getNode(positionNodeName).getValue(TypeToken.of(Vector3i.class));
+        Vector3d position = value.getNode(positionNodeName).getValue(TypeToken.of(Vector3d.class));
         return new StoredLocation(worldName, position);
     }
 
     @Override
     public void serialize(TypeToken<?> type, StoredLocation location, ConfigurationNode value) throws ObjectMappingException {
         value.getNode(worldNameNodeName).setValue(location.worldName);
-        value.getNode(positionNodeName).setValue(TypeToken.of(Vector3i.class), location.position);
+        value.getNode(positionNodeName).setValue(TypeToken.of(Vector3d.class), location.position);
     }
 }

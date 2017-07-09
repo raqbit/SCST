@@ -1,5 +1,6 @@
 package it.raqb.spongepl.scst.config;
 
+import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 
 /**
@@ -7,9 +8,14 @@ import com.flowpowered.math.vector.Vector3i;
  */
 public class StoredLocation {
     public String worldName;
-    public Vector3i position;
+    public Vector3d position;
 
     public StoredLocation(String worldName, Vector3i position){
+        this.worldName = worldName;
+        this.position = position.toDouble();
+    }
+
+    public StoredLocation(String worldName, Vector3d position){
         this.worldName = worldName;
         this.position = position;
     }
