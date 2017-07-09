@@ -11,6 +11,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.Location;
 
@@ -89,13 +90,11 @@ public class TutorialStartListener {
     }
 
     @Listener
-    public void onClientJoin(ClientConnectionEvent.Join event) {
+    public void onClientJoin(ClientConnectionEvent.Join event, @Root Player player) {
 
         if(!shouldCheck){
             return;
         }
-
-        Player player = event.getCause().first(Player.class).get();
 
         // Getting LuckPerms User object
         User lpUser = pluginInstance.getLuckPerms().getUser(player.getUniqueId());

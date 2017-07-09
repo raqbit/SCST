@@ -3,6 +3,7 @@ package it.raqb.spongepl.scst;
 import com.google.inject.Inject;
 import it.raqb.spongepl.scst.commands.CommandManager;
 import it.raqb.spongepl.scst.config.ConfigHelper;
+import it.raqb.spongepl.scst.listeners.SCBlockBanListener;
 import it.raqb.spongepl.scst.listeners.TutorialEndListener;
 import it.raqb.spongepl.scst.listeners.TutorialStartListener;
 import me.lucko.luckperms.LuckPerms;
@@ -86,8 +87,12 @@ public class SCST {
         TutorialEndListener tutorialEndListener = new TutorialEndListener(this);
         tutorialEndListener.setupConfig();
 
+        SCBlockBanListener blockBanListener = new SCBlockBanListener(this);
+        blockBanListener.setupConfig();
+
         Sponge.getEventManager().registerListeners(this, tutorialEndListener);
         Sponge.getEventManager().registerListeners(this, tutorialStartListener);
+        Sponge.getEventManager().registerListeners(this, blockBanListener);
     }
 
     private void setupPluginAPIs(){

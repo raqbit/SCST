@@ -5,49 +5,37 @@ import com.google.common.reflect.TypeToken;
 import it.raqb.spongepl.scst.SCST;
 import it.raqb.spongepl.scst.config.StoredLocation;
 import it.raqb.spongepl.scst.util.VectorUtils;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.Node;
-import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.exceptions.ObjectAlreadyHasException;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
+import org.spongepowered.api.block.BlockSnapshot;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.entity.MoveEntityEvent;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
-import java.util.Optional;
-
-
 /**
- * Created by Raqbit on 07-07-2017.
+ * Created by Raqbit on 07-09-2017.
  */
-public class TutorialEndListener {
+public class SCBlockBanListener {
 
     private SCST pluginInstance;
 
-    private LuckPermsApi luckperms;
-
-    // First and second corners
     private Location firstConfigLoc, secondConfigLoc;
 
     // Should we actually check
     private boolean shouldCheckPosition;
 
-    public TutorialEndListener(SCST plugin) {
-        pluginInstance = plugin;
-        luckperms = pluginInstance.getLuckPerms();
 
-        // By default the config does not have a placeholder location
-        shouldCheckPosition = true;
+    public SCBlockBanListener(SCST plugin){
+        pluginInstance = plugin;
     }
 
-    public void setupConfig() {
-        // Getting config nodes
-        ConfigurationNode firstPosNode = pluginInstance.getConfigHelper().rootNode.getNode("tutorial", "end", "firstPos");
-        ConfigurationNode secondPosNode = pluginInstance.getConfigHelper().rootNode.getNode("tutorial", "end", "secondPos");
+    public void setupConfig(){
+        ConfigurationNode firstPosNode = pluginInstance.getConfigHelper().rootNode.getNode("scblockban", "firstPos");
+        ConfigurationNode secondPosNode = pluginInstance.getConfigHelper().rootNode.getNode("scblockban", "secondPos");
 
         // Placeholder location so you can easily edit the config
         StoredLocation placeHolderLocation = new StoredLocation("world", new Vector3i(0, 0, 0));
@@ -65,7 +53,7 @@ public class TutorialEndListener {
             // Saving config
             pluginInstance.getConfigHelper().saveConfig();
 
-            pluginInstance.getLogger().info("Created placeholder values for tutorial area detection");
+            pluginInstance.getLogger().info("Created placeholder values for SC block ban detection");
 
             // Config has placeholder, don't check
             shouldCheckPosition = false;
@@ -87,7 +75,7 @@ public class TutorialEndListener {
             // we can assume the second one is aswell
             // also saves some memory :)
             if (firstStoredPos.equals(placeHolderLocation)) {
-                pluginInstance.getLogger().info("Tutorial positions still have placeholder values, please change.");
+                pluginInstance.getLogger().info("SC block ban positions still have placeholder values, please change.");
                 shouldCheckPosition = false;
                 return;
             }
@@ -102,62 +90,44 @@ public class TutorialEndListener {
             e.printStackTrace();
         }
 
-        // TODO: Check if worlds are actually the same
-
     }
 
     @Listener
-    public void onEntityMove(MoveEntityEvent event, @Root Player player) {
+    public void onBlockPlace(ChangeBlockEvent.Place event, @Root Player player){
 
         // If we know this is not setup, we don't wanna do any checks
         if (!shouldCheckPosition) {
             return;
         }
 
-        // Getting old and new location
-        Location oldLoc = event.getFromTransform().getLocation();
-        Location newLoc = event.getToTransform().getLocation();
+        BlockSnapshot snapshot = event.getTransactions().get(0).getFinal();
 
-        // If locations are the same, player hasn't moved,
-        // meaning that the movement is rotation
-        if (newLoc.equals(oldLoc)) {
-            return;
-        }
-
-        Vector3i newPlayerPosition = newLoc.getBlockPosition();
-
-        User lpUser = luckperms.getUser(player.getUniqueId());
-
-        // Player isn't newbie, we shouldn't do anything
-        if (!lpUser.getPrimaryGroup().equals("default")) {
-            return;
-        }
+        Location blockPlacementLocation = snapshot.getLocation().get();
 
         World configWorld = (World) firstConfigLoc.getExtent();
-        World playerWorld = (World) newLoc.getExtent();
+        World playerWorld = (World) blockPlacementLocation.getExtent();
 
         if(!configWorld.getName().equals(playerWorld.getName())){
+         return;
+        }
+
+        String blockId = snapshot.getState().getId();
+
+        if(!shouldBlockPlacement(blockId)){
             return;
         }
 
-        // If player isn't inside space
         if (!VectorUtils.isInside3DSpace(firstConfigLoc.getBlockPosition()
                 , secondConfigLoc.getBlockPosition()
-                , newPlayerPosition)) {
+                , blockPlacementLocation.getBlockPosition())) {
             return;
         }
+        event.setCancelled(true);
+    }
 
-        try {
-            Node groupNode = luckperms.getNodeFactory()
-                    .makeGroupNode(luckperms.getGroup("player"))
-                    .setValue(true).build();
-
-            lpUser.setPermission(groupNode);
-
-            luckperms.getStorage().saveUser(lpUser);
-            lpUser.refreshPermissions();
-        } catch (ObjectAlreadyHasException e) {
-            // Player is already in that group, shouldn't really matter.
-        }
+    private boolean shouldBlockPlacement(String blockId){
+        return blockId.startsWith("securitycraft:reinforced")
+                && !blockId.contains("gate")
+                && !blockId.contains("door");
     }
 }
