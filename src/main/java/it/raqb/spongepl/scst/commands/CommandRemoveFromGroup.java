@@ -1,5 +1,6 @@
 package it.raqb.spongepl.scst.commands;
 
+import it.raqb.spongepl.scst.Permissions;
 import it.raqb.spongepl.scst.SCST;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -24,7 +25,7 @@ public class CommandRemoveFromGroup extends Command {
 	@Override
 	public CommandSpec getCommand()
 	{
-		return CommandSpec.builder().description(Text.of("Takes care of removing a LuckPerms group and the corresponding scoreboard team in one command")).executor(new Executor()).permission("scst.command.removefromgroup").arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.string(Text.of("group")))).build();
+		return CommandSpec.builder().description(Text.of("Takes care of removing a LuckPerms group and the corresponding scoreboard team in one command")).executor(new Executor()).permission(Permissions.command_removefromgroup).arguments(GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))), GenericArguments.onlyOne(GenericArguments.string(Text.of("group")))).build();
 	}
 
 	@Override

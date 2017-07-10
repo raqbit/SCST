@@ -2,6 +2,7 @@ package it.raqb.spongepl.scst.listeners;
 
 import com.flowpowered.math.vector.Vector3i;
 import com.google.common.reflect.TypeToken;
+import it.raqb.spongepl.scst.Permissions;
 import it.raqb.spongepl.scst.SCST;
 import it.raqb.spongepl.scst.config.StoredLocation;
 import it.raqb.spongepl.scst.util.VectorUtils;
@@ -13,6 +14,8 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.filter.cause.Root;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 
@@ -31,6 +34,8 @@ public class SCBlockBanListener {
 
     public SCBlockBanListener(SCST plugin){
         pluginInstance = plugin;
+
+        shouldCheckPosition = true;
     }
 
     public void setupConfig(){
@@ -95,6 +100,10 @@ public class SCBlockBanListener {
     @Listener
     public void onBlockPlace(ChangeBlockEvent.Place event, @Root Player player){
 
+        if(player.hasPermission(Permissions.scblockban_bypass)){
+            return;
+        }
+
         // If we know this is not setup, we don't wanna do any checks
         if (!shouldCheckPosition) {
             return;
@@ -111,17 +120,21 @@ public class SCBlockBanListener {
          return;
         }
 
+
         String blockId = snapshot.getState().getId();
 
         if(!shouldBlockPlacement(blockId)){
             return;
         }
 
+
         if (!VectorUtils.isInside3DSpace(firstConfigLoc.getBlockPosition()
                 , secondConfigLoc.getBlockPosition()
                 , blockPlacementLocation.getBlockPosition())) {
             return;
         }
+
+        player.sendMessage(Text.builder("You are not allowed to place reinforced blocks inside towns").color(TextColors.RED).build());
         event.setCancelled(true);
     }
 

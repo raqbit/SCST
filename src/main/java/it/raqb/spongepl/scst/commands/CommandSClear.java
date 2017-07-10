@@ -1,6 +1,7 @@
 package it.raqb.spongepl.scst.commands;
 
 import com.google.common.collect.Iterables;
+import it.raqb.spongepl.scst.Permissions;
 import it.raqb.spongepl.scst.SCST;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -27,7 +28,7 @@ public class CommandSClear extends Command {
         return CommandSpec.builder()
                 .description(Text.of("Clears everything in your inventory, except for your armor"))
                 .executor(new Executor())
-                .permission("scst.command.sclear")
+                .permission(Permissions.command_sclear)
                 .build();
     }
 

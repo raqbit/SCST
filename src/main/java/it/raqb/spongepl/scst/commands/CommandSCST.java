@@ -1,5 +1,6 @@
 package it.raqb.spongepl.scst.commands;
 
+import it.raqb.spongepl.scst.Permissions;
 import it.raqb.spongepl.scst.SCST;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -33,7 +34,7 @@ public class CommandSCST extends Command {
 
         return CommandSpec.builder()
                 .description(Text.of("Main SCST command"))
-                .permission("scst.command.scst")
+                .permission(Permissions.command_scst)
                 .child(versionCommand, "version", "v")
                 .build();
     }

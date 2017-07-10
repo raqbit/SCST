@@ -2,6 +2,7 @@ package it.raqb.spongepl.scst.commands;
 
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.TypeToken;
+import it.raqb.spongepl.scst.Permissions;
 import it.raqb.spongepl.scst.SCST;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -42,7 +43,7 @@ public class CommandOutfit extends Command {
         return CommandSpec.builder()
                 .description(Text.of("Allows you to save and restore your outfit"))
                 .executor(new RestoreExecutor())
-                .permission("scst.command.outfit")
+                .permission(Permissions.command_outfit)
                 .child(saveCommandSpec, "save", "set", "s")
                 .build();
     }
