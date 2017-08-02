@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
 //    Sponge API
-    compile 'org.spongepowered:spongeapi:6.1.0-SNAPSHOT'
+    compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
 
 //    Plugin APIs
     compile ("me.lucko.luckperms:luckperms-api:3.2")
