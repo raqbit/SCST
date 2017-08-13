@@ -18,7 +18,7 @@ dependencies {
     compile 'org.spongepowered:spongeapi:7.0.0-SNAPSHOT'
 
 //    Plugin APIs
-    compile ("me.lucko.luckperms:luckperms-api:3.2")
+    compile ("me.lucko.luckperms:luckperms-api:3.3-SNAPSHOT")
 }
 
 libsDirName = '../run/mods'
