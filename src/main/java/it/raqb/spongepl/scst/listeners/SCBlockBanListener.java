@@ -5,6 +5,7 @@ import com.google.common.reflect.TypeToken;
 import it.raqb.spongepl.scst.Permissions;
 import it.raqb.spongepl.scst.SCST;
 import it.raqb.spongepl.scst.config.StoredLocation;
+import it.raqb.spongepl.scst.util.ConfigUtils;
 import it.raqb.spongepl.scst.util.VectorUtils;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -47,14 +48,7 @@ public class SCBlockBanListener {
 
         // Config nodes do not exist on disk
         if (firstPosNode.isVirtual() || secondPosNode.isVirtual()) {
-            try {
-                // Setting place holder info
-                firstPosNode.setValue(TypeToken.of(StoredLocation.class), placeHolderLocation);
-                secondPosNode.setValue(TypeToken.of(StoredLocation.class), placeHolderLocation);
-            } catch (ObjectMappingException e) {
-                pluginInstance.getLogger().error("Could not map stored location");
-                e.printStackTrace();
-            }
+            ConfigUtils.setupPlaceholderNodes(pluginInstance, firstPosNode, secondPosNode, placeHolderLocation);
             // Saving config
             pluginInstance.getConfigHelper().saveConfig();
 

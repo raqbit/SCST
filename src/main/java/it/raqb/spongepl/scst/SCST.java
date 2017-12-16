@@ -98,9 +98,7 @@ public class SCST {
     private void setupPluginAPIs(){
         // Setup LuckPerms API
         Optional<LuckPermsApi> provider = LuckPerms.getApiSafe();
-        if(provider.isPresent()){
-            luckPerms = provider.get();
-        }
+        provider.ifPresent(luckPermsApi -> luckPerms = luckPermsApi);
     }
 
     public Logger getLogger() {

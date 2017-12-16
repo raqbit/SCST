@@ -4,11 +4,11 @@ import com.flowpowered.math.vector.Vector3i;
 import com.google.common.reflect.TypeToken;
 import it.raqb.spongepl.scst.SCST;
 import it.raqb.spongepl.scst.config.StoredLocation;
+import it.raqb.spongepl.scst.util.ConfigUtils;
 import it.raqb.spongepl.scst.util.VectorUtils;
 import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.Node;
 import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.exceptions.ObjectAlreadyHasException;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 import org.spongepowered.api.entity.living.player.Player;
@@ -17,8 +17,6 @@ import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
-
-import java.util.Optional;
 
 
 /**
@@ -54,14 +52,7 @@ public class TutorialEndListener {
 
         // Config nodes do not exist on disk
         if (firstPosNode.isVirtual() || secondPosNode.isVirtual()) {
-            try {
-                // Setting place holder info
-                firstPosNode.setValue(TypeToken.of(StoredLocation.class), placeHolderLocation);
-                secondPosNode.setValue(TypeToken.of(StoredLocation.class), placeHolderLocation);
-            } catch (ObjectMappingException e) {
-                pluginInstance.getLogger().error("Could not map stored location");
-                e.printStackTrace();
-            }
+            ConfigUtils.setupPlaceholderNodes(pluginInstance, firstPosNode, secondPosNode, placeHolderLocation);
             // Saving config
             pluginInstance.getConfigHelper().saveConfig();
 
@@ -136,7 +127,7 @@ public class TutorialEndListener {
         World configWorld = (World) firstConfigLoc.getExtent();
         World playerWorld = (World) newLoc.getExtent();
 
-        if(!configWorld.getName().equals(playerWorld.getName())){
+        if (!configWorld.getName().equals(playerWorld.getName())) {
             return;
         }
 
@@ -147,17 +138,14 @@ public class TutorialEndListener {
             return;
         }
 
-        try {
-            Node groupNode = luckperms.getNodeFactory()
-                    .makeGroupNode(luckperms.getGroup("player"))
-                    .setValue(true).build();
+        Node groupNode = luckperms.getNodeFactory()
+                .makeGroupNode(luckperms.getGroup("player"))
+                .setValue(true).build();
 
-            lpUser.setPermission(groupNode);
+        lpUser.setPermission(groupNode);
 
-            luckperms.getStorage().saveUser(lpUser);
-            lpUser.refreshPermissions();
-        } catch (ObjectAlreadyHasException e) {
-            // Player is already in that group, shouldn't really matter.
-        }
+        luckperms.getStorage().saveUser(lpUser);
+        lpUser.refreshCachedData();
+
     }
 }
