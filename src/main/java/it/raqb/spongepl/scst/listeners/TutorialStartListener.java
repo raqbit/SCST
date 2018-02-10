@@ -1,11 +1,9 @@
 package it.raqb.spongepl.scst.listeners;
 
 import com.flowpowered.math.vector.Vector3d;
-import com.flowpowered.math.vector.Vector3i;
 import com.google.common.reflect.TypeToken;
 import it.raqb.spongepl.scst.SCST;
 import it.raqb.spongepl.scst.config.StoredLocation;
-import me.lucko.luckperms.api.LuckPermsApi;
 import me.lucko.luckperms.api.User;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.objectmapping.ObjectMappingException;
@@ -14,8 +12,9 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.world.Location;
+import org.spongepowered.api.world.World;
 
-import java.util.Vector;
+import java.util.Optional;
 
 /**
  * Created by ramon on 8-7-17.
@@ -41,10 +40,10 @@ public class TutorialStartListener {
 
         StoredLocation placeholderLocation =
                 new StoredLocation("world",
-                new Vector3d(0,0,0));
+                        new Vector3d(0, 0, 0));
 
         // Node doesn't exist
-        if(startPosNode.isVirtual()) {
+        if (startPosNode.isVirtual()) {
 
             try {
                 startPosNode.setValue(
@@ -59,9 +58,9 @@ public class TutorialStartListener {
         }
 
         // (Pitch,Yaw,Roll)
-        Vector3d placeholderRotation = new Vector3d(0,0,0);
+        Vector3d placeholderRotation = new Vector3d(0, 0, 0);
 
-        if(startRotNode.isVirtual()){
+        if (startRotNode.isVirtual()) {
             try {
                 startRotNode.setValue(
                         TypeToken.of(Vector3d.class),
@@ -75,10 +74,16 @@ public class TutorialStartListener {
         try {
             StoredLocation storedLocation = startPosNode.getValue(TypeToken.of(StoredLocation.class));
             Vector3d storedRotation = startRotNode.getValue(TypeToken.of(Vector3d.class));
-            this.tutorialStartPos = new Location(pluginInstance.getGame().getServer().getWorld(storedLocation.worldName).get(), storedLocation.position);
+            Optional<World> optionalWorld = pluginInstance.getGame().getServer().getWorld(storedLocation.worldName);
+            if (optionalWorld.isPresent()) {
+                World world = optionalWorld.get();
+                this.tutorialStartPos = new Location<>(world, storedLocation.position);
+            } else {
+                this.pluginInstance.getLogger().warn("Could not find world " + storedLocation.worldName);
+            }
             this.tutorialStartRot = storedRotation;
 
-            if(storedLocation.equals(placeholderLocation)){
+            if (storedLocation.equals(placeholderLocation)) {
                 pluginInstance.getLogger().info("Tutorial Spawnpoint placeholder value detected");
                 shouldCheck = false;
                 return;
@@ -92,7 +97,7 @@ public class TutorialStartListener {
     @Listener
     public void onClientJoin(ClientConnectionEvent.Join event, @Root Player player) {
 
-        if(!shouldCheck){
+        if (!shouldCheck) {
             return;
         }
 
